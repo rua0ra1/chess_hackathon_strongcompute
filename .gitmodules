@@ -1,0 +1,3 @@
+[submodule "chess-hackathon"]
+	path = chess-hackathon
+	url = https://github.com/StrongResearch/chess-hackathon.git
