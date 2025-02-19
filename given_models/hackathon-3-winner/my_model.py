@@ -80,26 +80,19 @@ class Residual(nn.Module):
 
     def __init__(self, outer_channels, inner_channels, use_1x1conv, dropout, dilation=1):
         super().__init__()
-        self.conv1 = nn.Conv2d(outer_channels, inner_channels,
+        self.conv1 = nn.Conv2d(outer_channels, outer_channels,
                                kernel_size=3, padding='same', stride=1, dilation=dilation)
-        self.conv2 = nn.Conv2d(inner_channels, outer_channels,
-                               kernel_size=3, padding='same', stride=1, dilation=dilation)
-        if use_1x1conv:
-            self.conv3 = nn.Conv2d(
-                outer_channels, outer_channels, kernel_size=1, stride=1)
-        else:
-            self.conv3 = None
-        self.bn1 = nn.BatchNorm2d(inner_channels)
-        self.bn2 = nn.BatchNorm2d(outer_channels)
+
+        self.bn1 = nn.BatchNorm2d(outer_channels)
+
         self.dropout = nn.Dropout(p=dropout)
 
     def forward(self, X):
-        Y = F.relu(self.bn1(self.conv1(X)))
-        Y = self.dropout(self.bn2(self.conv2(Y)))
-        if self.conv3:
-            X = self.conv3(X)
+        Y = self.bn1(self.conv1(X))
+        Y=self.dropout(Y)
+        Y = F.relu(Y)
         Y += X
-        return F.relu(Y)
+        return Y
 
 
 class Model(nn.Module):
